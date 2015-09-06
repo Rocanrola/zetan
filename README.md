@@ -22,12 +22,20 @@ an app is a directory inside the "apps" directory
 ```sh
 http://localhost:5678/
 # will load the app in the apps/index directory
+
+http://localhost:5678/friends
+# will load the app in the apps/friends directory
 ```
 
 - app.js
 - apps
 	- index
 		- index.js
+		- template.html
+	- friends
+		- index.js
+		- template.html
+	- aboutus
 		- template.html
 
 apps/index.js has to exports a "render" method, "middleware" method or both.
