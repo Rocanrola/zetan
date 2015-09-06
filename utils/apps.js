@@ -3,6 +3,7 @@ var path = require('path');
 var mustache = require('mustache');
 var fs = require('fs');
 var log = require('../utils/log');
+var zetan = require('../');
 var readFile = require('fs-readfile-promise');
 
 
@@ -46,7 +47,7 @@ exports.load = function(appName,options){
 			log.debug('module.render method found');
 			
 			var data = {}
-			var renderPromise = module.render(data);
+			var renderPromise = module.render(data,zetan);
 
 			if(!renderPromise || !renderPromise.then){
 				log.debug('module.render does not return a promise');

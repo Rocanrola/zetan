@@ -21,12 +21,14 @@ var defaultConfig = {
 }
 
 module.exports = function(config){
+	var zetan = this;
 	config = _.defaultsDeep(config || {}, defaultConfig);
 	
 	var mw = composable_middleware();
 	log.toggleDebug(config.debug);
 
 	mw.use(function(req,res,next){
+		req.zetan = zetan;
 		req.helpers = helpers;
 		next();
 	})

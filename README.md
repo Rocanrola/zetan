@@ -2,7 +2,7 @@
 
 ## App Loader
 
-Just plug the middleware
+just plug the middleware
 
 ```js
 var express = require('express');
@@ -17,7 +17,7 @@ app.listen(port,function () {
 });
 ```
 
-An app is a directory inside the "apps" directory
+an app is a directory inside the "apps" directory
 
 ```sh
 http://localhost:5678/
@@ -30,26 +30,30 @@ http://localhost:5678/
 		- index.js
 		- template.html
 
-apps/index.js has to exports render method, middleware method or both
+apps/index.js has to exports a "render" method, "middleware" method or both.
 
 ```js
-// apps/index/index.js
+// File: apps/index/index.js
+
 var q = require('q');
 
-// data is a standar data setted by zetam
-// the promise reponse will be render with the template.html if this exists, if not it just repond the object as plain json
+// data is a standar data setted by zetan
+// the promise reponse will be render in the "template.html" if this exists
+// if not it just repond the object as plain json
 
-exports.render = function(data){
+exports.render = function(data,zetan){
+	// data.req and data.res is passed 
+
 	var deferred = q.defer();
 	deferred.resolve({a:'hola'});
 	return deferred.promise;
 }
 
-// if middleware method it's used to set data to be passed to render method
+// if middleware method exists it's used to set data to be passed to render method
 
-exports.render = function(req,res,render){
+exports.middleware = function(req,res,render){
 	var data = {
-		text:'this is passed to render method',
+		text:'this is passed to the render method',
 		params:req.query
 	}
 	render(data);
@@ -57,7 +61,9 @@ exports.render = function(req,res,render){
 
 ```
 
-template.html file is a Mustache template. Zetan 
+### template.html
+
+template.html file is a Mustache template.  if it exits alone zetan will return this to the browser
 
 
 
@@ -72,6 +78,32 @@ Or you can use the preconfigured api client including the script from:
 
 ```html
 <script src="http://localhost:5678/api/v1/client.js"></script>
+```
+
+# Helpers
+
+helpers are attached to req object, zetan object and can be loaded as modules
+
+from any module:
+
+```js
+var emailHelper = require('zetan/helpers/email');
+```
+
+from an app
+
+```js
+exports.render = function(data,zetan){
+	zetan.helpers.email.send({...})
+}
+```
+
+or
+
+```js
+exports.middleware = function(req,res,render){
+	req.zetan.helpers.email.send({...})
+}
 ```
 
 
