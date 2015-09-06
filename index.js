@@ -39,4 +39,4 @@ module.exports = function(config){
 	return mw;
 }
 
-exports.helpers = helpers;
+module.exports.helpers = helpers;

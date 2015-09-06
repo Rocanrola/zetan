@@ -36,17 +36,9 @@ exports.load = function(appName,options){
 		var modulePath = require.resolve(appPath);
 		log.debug('module path',modulePath);
 		var module = require(modulePath);
-		
-		if(module.middleware){
-			log.debug('module.middleware method found');
-			module.middleware(options.req,options.res,function(data){
-				mustache.render(template,data)
-			});
-		}else if(module.render){
-			log.debug('module.middleware method not found');
-			log.debug('module.render method found');
-			
-			var data = {}
+
+		var renderMethod = function(data){
+			data = data || {}
 			var renderPromise = module.render(data,zetan);
 
 			if(!renderPromise || !renderPromise.then){
@@ -57,14 +49,24 @@ exports.load = function(appName,options){
 					respondTemplate(renderData);
 				})
 			}
-
+		}
+		
+		if(module.middleware){
+			log.debug('module.middleware method found');
+			module.middleware(options.req,options.res,function(data){
+				renderMethod(data);
+			});
+		}else if(module.render){
+			log.debug('module.middleware method not found');
+			log.debug('module.render method found');
+			renderMethod();
 		}else{
 			deferred.reject()
 		}
 
 	}catch(e){
 		log.debug('error loading module. loading template ...');
-		respondTemplate(renderData);
+		respondTemplate();
 	}
 
 	return deferred.promise;

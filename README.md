@@ -82,12 +82,13 @@ Or you can use the preconfigured api client including the script from:
 
 # Helpers
 
-helpers are attached to req object, zetan object and can be loaded as modules
+helpers are attached to "req" object, "zetan" object and can be loaded as modules
 
 from any module:
 
 ```js
 var emailHelper = require('zetan/helpers/email');
+emailHelper.send({...})
 ```
 
 from an app
@@ -103,6 +104,8 @@ or
 ```js
 exports.middleware = function(req,res,render){
 	req.zetan.helpers.email.send({...})
+	// or
+	req.helpers.email.send({...})
 }
 ```
 
