@@ -76,6 +76,10 @@ It receive data sent by the render method.
 It used triple curly braces notation: {{{var}}}
 if it exists alone, zetan will return the static html as response.
 
+## Static Files
+
+just create a "public" directory.
+
 ## Browser
 
 Zetan client for browserify
