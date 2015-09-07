@@ -19,9 +19,11 @@ module.exports = function(options){
 		apps.load(appName,options).then(function(appRes){
 			res.send(appRes);
 		}).catch(function(){
+			log.debug('app "'+appName+'" module or template not found. loading 404.');
 			apps.load(options.notFoundAppName,options).then(function(appRes){
 				res.send(appRes);
 			}).catch(function(){
+				log.debug('404 app not found. responding plain status');
 				res.status(404).end();
 			})
 		});

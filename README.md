@@ -38,14 +38,14 @@ http://localhost:5678/friends
 	- aboutus
 		- template.html
 
-apps/index.js has to exports a "render" method, "middleware" method or both.
+apps have to export a "render" method, a "middleware" method or both.
 
 ```js
 // File: apps/index/index.js
 
 var q = require('q');
 
-// data is a standar data setted by zetan
+// first param is data setted by zetan
 // the promise reponse will be render in the "template.html" if this exists
 // if not it just repond the object as plain json
 
@@ -71,10 +71,10 @@ exports.middleware = function(req,res,render){
 
 ### template.html
 
-template.html file is a Mustache template.  if it exits alone zetan will return this to the browser
-
-
-
+template.html file is a Mustache template. 
+It receive data sent by the render method. 
+It used triple curly braces notation: {{{var}}}
+if it exists alone, zetan will return the static html as response.
 
 ## Browser
 

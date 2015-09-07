@@ -18,17 +18,23 @@ exports.load = function(appName,options){
 	log.debug('template path',templatePath);
 
 	var respondTemplate = function(data){
-		data = data || {};
-		data.partials = data.partials || {};
-
 		readFile(templatePath).then(function(tpl){
+			data = data || {};
+			data.partials = data.partials || {};
+
 			log.debug('template '+templatePath+' found ..');
 			var template = options.templatesPrefix + tpl.toString();
 			var r = mustache.render(template,data,data.partials);
 			deferred.resolve(r);
 		}).catch(function(){
-			log.debug('template at '+templatePath+' not found. responding plain object');
-			deferred.resolve(data);
+			log.debug('template at '+templatePath+' not found.');
+			if(data){
+				log.debug('responding plain object');
+				deferred.resolve(data);
+			}else{
+				log.debug('not data from module found')
+				deferred.reject();
+			}
 		})
 	}
 

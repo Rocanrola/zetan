@@ -19,7 +19,7 @@ log.toggleDebug = function(flag){
 log.debug = function(){
 	if(log.showDebug && arguments[0]){
 		
-		arguments[0] = '### zetan debug: ' + arguments[0];
+		arguments[0] = '# z debug: ' + arguments[0];
 		arguments[0] = arguments[0].yellow;
 
 		console.log.apply(console,arguments);
