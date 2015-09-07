@@ -74,7 +74,8 @@ exports.middleware = function(req,res,render){
 template.html file is a Mustache template. 
 It receive data sent by the render method. 
 It used triple curly braces notation: {{{var}}}
-if it exists alone, zetan will return the static html as response.
+
+if template exists alone inside the app, zetan will return the static html as response.
 
 ## Static Files
 
