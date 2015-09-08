@@ -9,7 +9,10 @@ var helpers = require('./helpers');
 
 var defaultConfig = {
 	debug:false,
-	api:{},
+	api:{
+		baseDir:'api',
+		prefix:'/api/v1'
+	},
 	apps:{
 		baseDir:'apps',
 		homeAppName:'index',

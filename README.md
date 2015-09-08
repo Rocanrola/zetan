@@ -77,6 +77,48 @@ It used triple curly braces notation: {{{var}}}
 
 if template exists alone inside the app, zetan will return the static html as response.
 
+## API
+
+in order to create an API resource create a directory inside an api directory.
+
+```js
+// File: api/user/index.js
+
+var q = require('q');
+var db = require('db');
+
+exports.alias = {
+	me:{
+		get:function(data){
+			// receive data formatted by zetan 
+			// it can be overriten using a middleware method
+
+			// it has to return a promise
+
+			return db.find('users',{id:data.auth.id});
+		}
+	}
+}
+
+exports.get = function(data){
+	if(data.id){
+		return db.find('users',{ id:data.id });
+	}else{
+		// when is not and "id" zetan has an automatic pagination behaviour
+		// the promise has to return an array
+		return db.find('users');
+	}
+}
+
+// override default zetan behaviour including pagination
+// exports.middleware = function(req,res,method){
+// 	method({
+// 		... data to be passed to method or alias
+// 	})
+// }
+
+```
+
 ## Static Files
 
 just create a "public" directory.
