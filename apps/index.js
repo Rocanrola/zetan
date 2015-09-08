@@ -1,3 +1,4 @@
+var path = require('path');
 var composable_middleware = require( 'composable-middleware' );
 var express = require('express');
 var log = require('../utils/log');

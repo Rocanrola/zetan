@@ -83,11 +83,11 @@ just create a "public" directory.
 
 ## Browser
 
-Zetan client for browserify
+zetan client for browserify
 ```js
 var zetan = require('zetan/browser');
 ```
-Or you can use the preconfigured api client including the script from:
+or you can use the preconfigured api client including the script from:
 
 ```html
 <script src="http://localhost:5678/api/v1/client.js"></script>

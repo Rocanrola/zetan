@@ -1,3 +1,4 @@
+var path = require( 'path' );
 var _ = require( 'lodash' );
 var composable_middleware = require( 'composable-middleware' );
 var express = require('express');
@@ -30,6 +31,10 @@ module.exports = function(config){
 	
 	// static files
 	mw.use(express.static('public'));
+	
+	// zetan static files
+	var staticsDir = path.resolve(__dirname,'statics/');
+	mw.use(express.static(staticsDir));
 
 	// attach things to req object
 	mw.use(function(req,res,next){
@@ -45,4 +50,5 @@ module.exports = function(config){
 	return mw;
 }
 
+// exports other things
 module.exports.helpers = helpers;

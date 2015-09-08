@@ -11,10 +11,12 @@
     "example": "nodemon example/index"
   },
   "files": [
+    "adapters",
     "api",
     "apps",
     "browser",
     "helpers",
+    "statics",
     "utils"
   ],
   "author": "qzapaia",
