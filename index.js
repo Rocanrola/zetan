@@ -3,9 +3,11 @@ var _ = require( 'lodash' );
 var composable_middleware = require( 'composable-middleware' );
 var express = require('express');
 
-var log = require('./utils/log');
 var helpers = require('./helpers');
+var utils = require('./utils');
+var argv = require('minimist')(process.argv.slice(2));
 
+var log = utils.log;
 
 var defaultConfig = {
 	debug:false,
@@ -23,12 +25,15 @@ var defaultConfig = {
 }
 
 module.exports = function(config){
-	var zetan = this;
-	var mw = composable_middleware();
-
 	// merge config
 	config = _.defaultsDeep(config || {}, defaultConfig);
 	
+	var zetan = this;
+	var mw = composable_middleware();
+	
+	// global c object
+	global.c = require('tracer').colorConsole();
+
 	// switch on/off debug mode
 	log.toggleDebug(config.debug);
 	
@@ -47,6 +52,13 @@ module.exports = function(config){
 	})
 	
 	// add middlewares
+	if(argv.dev){
+		log.debug('--dev argument passed');
+
+		log.debug('connect live reload middleware');
+		mw.use(require('connect-livereload')());	
+	}
+
 	mw.use(require('./api')(config.api));
 	mw.use(require('./apps')(config.apps));
 
@@ -55,3 +67,4 @@ module.exports = function(config){
 
 // exports other things
 module.exports.helpers = helpers;
+module.exports.utils = utils;

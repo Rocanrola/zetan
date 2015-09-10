@@ -7,6 +7,7 @@ var zetan = require('../');
 var readFile = require('fs-readfile-promise');
 
 
+
 exports.load = function(appName,options){
 
 	var deferred = q.defer();
@@ -17,14 +18,23 @@ exports.load = function(appName,options){
 	log.debug('app path',appPath);
 	log.debug('template path',templatePath);
 
-	var respondTemplate = function(data){
+	var respondTemplate = function(data,partials){
 		readFile(templatePath).then(function(tpl){
 			data = data || {};
-			data.partials = data.partials || {};
+			partials = partials || {};
+			
+			data.partial = function(){
+				return function(val, render) {
+					var partialPath = path.resolve(appPath,render(val));
+				    return fs.readFileSync(partialPath).toString();
+				}
+			};
 
 			log.debug('template '+templatePath+' found ..');
 			var template = options.templatesPrefix + tpl.toString();
-			var r = mustache.render(template,data,data.partials);
+			
+			var r = mustache.render(template,data,partials);
+
 			deferred.resolve(r);
 		}).catch(function(){
 			log.debug('template at '+templatePath+' not found.');
@@ -51,9 +61,7 @@ exports.load = function(appName,options){
 				log.debug('module.render does not return a promise');
 				throw 'error';
 			}else{
-				renderPromise.then(function(renderData){
-					respondTemplate(renderData);
-				})
+				renderPromise.then(respondTemplate);
 			}
 		}
 		

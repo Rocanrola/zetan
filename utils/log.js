@@ -1,15 +1,16 @@
 var colors = require('colors');
 var prefix = 'zetan: ';
+var logger = console;
 
 var log = function(){
 	Array.prototype.unshift.call(arguments,'## zetan:'.yellow);
 
-	console.log.apply(console,arguments);
+	logger.log.apply(logger,arguments);
 }
 
 log.error = function(mssg){
 	mssg = prefix + (mssg||'');
-	console.log.call(mssg.red);
+	logger.log.call(mssg.red);
 }
 
 log.toggleDebug = function(flag){
@@ -22,7 +23,7 @@ log.debug = function(){
 		arguments[0] = '# z debug: ' + arguments[0];
 		arguments[0] = arguments[0].yellow;
 
-		console.log.apply(console,arguments);
+		logger.log.apply(logger,arguments);
 	}
 }
 

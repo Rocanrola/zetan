@@ -1,5 +1,6 @@
 # Zeta Negroni: My greatest hits (In progress)
 
+
 ## App Loader
 
 just plug the middleware
@@ -13,7 +14,8 @@ var port = 5678;
 app.use(zetan());
 
 app.listen(port,function () {
-	console.log('api running on http://localhost:' + port);
+	// c global object is a tracer logger
+	c.log('api running on http://localhost:' + port);
 });
 ```
 
@@ -76,6 +78,29 @@ It receive data sent by the render method.
 It used triple curly braces notation: {{{var}}}
 
 if template exists alone inside the app, zetan will return the static html as response.
+
+#### partial loader
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">	
+</head>
+<body>
+	<!-- partial function can be used within templates -->
+	{{{#partial}}}partials/header.html{{{/partial}}}
+</body>
+</html>
+
+```
+
+## C logger
+
+```js
+// c global object added by zetan
+c.log('use this instead console.log');
+```
 
 ## API
 
@@ -185,9 +210,9 @@ emailHelper.send({
 	    "from_email": "noreply@zapaia.com",
 	    "to": [{  "email": "friend@email.com" }]
 	}).then(function(response){
-		console.log('email sent');
+		c.log('email sent');
 	}).catch(function(){
-		console.log(':(');
+		c.log(':(');
 	})
 ```
 
@@ -196,11 +221,12 @@ emailHelper.send({
 ## Gulp
 
 ### Browserify
+
+```js
 // gulpfile.js
 
 var gulpHelper = require('zetan/helpers/gulp');
 
-```js
 gulp.task('js',function(){
 	return gulpHelper.browserify({ 
 		watch:true, // use watchify
@@ -210,4 +236,17 @@ gulp.task('js',function(){
 		}
 	})
 });
+```
+
+### LESS
+```js
+// process files those names end with "*.public.less"
+// in the "apps" directory and place these in "public/dist/apps/{APPNAME}/{FILENAME}.css"
+gulp.task('css',gulpHelper.less());
+```
+
+### Nodemon
+```js
+// run index.js with nodemon and add an "--dev" argument
+gulp.task('serve',gulpHelper.serve());
 ```
