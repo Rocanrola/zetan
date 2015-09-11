@@ -68,3 +68,14 @@ module.exports = function(config){
 // exports other things
 module.exports.helpers = helpers;
 module.exports.utils = utils;
+module.exports.serve = function(port,options){
+	port = port || 8080;
+	var app = express();
+	var port = 5678;
+
+	app.use(this(options));
+
+	app.listen(port,function(){
+		log.debug('## running on http://localhost:' + port);
+	});
+}

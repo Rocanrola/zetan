@@ -1,7 +1,18 @@
 # Zeta Negroni: My greatest hits (In progress)
 
 
-## App Loader
+## Start
+
+```js
+var zetan = require('zetan');
+var port = process.env.PORT || 5690;
+var options = {
+	debug:true
+};
+zetan.serve(port,options);
+```
+
+## Or
 
 just plug the middleware
 

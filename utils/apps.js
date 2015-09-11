@@ -7,87 +7,77 @@ var zetan = require('../');
 var readFile = require('fs-readfile-promise');
 
 
+exports.loadTemplate = function(appName,options){
+	var appPath = this.resolve(appName,options);
+	var templatePath = path.resolve(appPath,options.templatesDefaultFileName);
+	
+	log.debug('resolved template location:',templatePath);
+	return readFile(templatePath).then(function(tpl){
+		log.debug('template '+templatePath+' found ..');
+		return tpl.toString();
+	});
+}
+
+exports.render = function(template,data,partials,options){
+	template = options.templatesPrefix + template.toString();
+	data = data || {};
+	partials = partials || {};
+	
+	data.partial = function(){
+		return function(val, render) {
+			var partialPath = path.resolve(appPath,render(val));
+		    return fs.readFileSync(partialPath).toString();
+		}
+	};
+
+	return mustache.render(template,data,partials);
+}
+
+
+exports.defaultMiddleware = function(req,res,render){
+	var data = {}
+	render(data);
+}
+
+exports.defaultRender = function(data,zetan){
+	var deferred = q.defer();
+	deferred.resolve(data);
+	return deferred.promise;
+}
 
 exports.load = function(appName,options){
 
 	var deferred = q.defer();
 	var appPath = this.resolve(appName,options);
-	var templatePath = path.resolve(appPath,options.templatesDefaultFileName);
+	var that = this;
 	
-	log.debug('loading app',appName);
-	log.debug('app path',appPath);
-	log.debug('template path',templatePath);
-
-	var respondTemplate = function(data,partials){
-		readFile(templatePath).then(function(tpl){
-			data = data || {};
-			partials = partials || {};
-			
-			data.partial = function(){
-				return function(val, render) {
-					var partialPath = path.resolve(appPath,render(val));
-				    return fs.readFileSync(partialPath).toString();
-				}
-			};
-
-			log.debug('template '+templatePath+' found ..');
-			var template = options.templatesPrefix + tpl.toString();
-			
-			var r = mustache.render(template,data,partials);
-
-			deferred.resolve(r);
-		}).catch(function(){
-			log.debug('template at '+templatePath+' not found.');
-			if(data){
-				log.debug('responding plain object');
-				deferred.resolve(data);
-			}else{
-				log.debug('not data from module found')
-				deferred.reject();
-			}
-		})
-	}
+	log.debug('attempting to load app');
+	log.debug('attempting to load app',appName);
+	log.debug('resolved app location:',appPath);
 
 	try{
-		var modulePath = require.resolve(appPath);
-		log.debug('module path',modulePath);
-		var module = require(modulePath);
+		var module = require(appPath);
+		log.debug('module loaded',appName);
 
-		var renderMethod = function(data){
-			data = data || {}
-			var renderPromise = module.render(data,zetan);
-
-			if(!renderPromise || !renderPromise.then){
-				log.debug('module.render does not return a promise');
-				throw 'error';
-			}else{
-				renderPromise.then(respondTemplate);
-			}
-		}
+		var middleware = (module.middleware || this.defaultMiddleware);
+		var render = (module.render || this.defaultRender);
 		
-		if(module.middleware){
-			log.debug('module.middleware method found');
-			module.middleware(options.req,options.res,function(data){
-				renderMethod(data);
-			});
-		}else if(module.render){
-			log.debug('module.middleware method not found');
-			log.debug('module.render method found');
-			renderMethod();
-		}else{
-			deferred.reject()
-		}
+		middleware(options.req,options.res,function(middData){
+			render(middData,zetan).then(function(renderData){
+				that.loadTemplate(appName,options).then(function(tpl){
+					var res = that.render(tpl,renderData,{},options);
+					deferred.resolve(res);
+				})
+			})
+		});
 
 	}catch(e){
-		log.debug('error loading module. loading template ...');
-		respondTemplate();
+		log.debug('error loading module', e);
+		log.debug('trying to load template ...');
+		this.loadTemplate(appName,options).then(deferred.resolve).catch(deferred.reject);
 	}
 
 	return deferred.promise;
-}
-
-
-exports.loadTemplate = function(){
 
 }
 

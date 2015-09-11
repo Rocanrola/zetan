@@ -1,4 +1,5 @@
 var colors = require('colors');
+var _ = require('lodash');
 var prefix = 'zetan: ';
 var logger = console;
 
@@ -14,11 +15,11 @@ log.error = function(mssg){
 }
 
 log.toggleDebug = function(flag){
-	log.showDebug = flag || !this.showDebug;
+	this.showDebug = _.isUndefined(flag) ? !this.showDebug : flag;
 }
 // TODO: accept multiple params
 log.debug = function(){
-	if(log.showDebug && arguments[0]){
+	if(this.showDebug && arguments[0]){
 		
 		arguments[0] = '# z debug: ' + arguments[0];
 		arguments[0] = arguments[0].yellow;
