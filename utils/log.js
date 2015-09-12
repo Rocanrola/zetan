@@ -4,7 +4,8 @@ var prefix = 'zetan: ';
 var logger = console;
 
 var log = function(){
-	Array.prototype.unshift.call(arguments,'## zetan:'.yellow);
+	arguments[0] = '# z: ' + arguments[0];
+	arguments[0] = arguments[0].green;
 
 	logger.log.apply(logger,arguments);
 }

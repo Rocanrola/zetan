@@ -20,13 +20,15 @@ var defaultConfig = {
 		homeAppName:'index',
 		notFoundAppName:'404',
 		templatesDefaultFileName:'template.html',
+		clientSriptDefaultFileName:'client.js',
+		stylesheetDefaultFileName:'styles.less',
 		templatesPrefix:'{{={{{ }}}=}}'
 	}
 }
 
-module.exports = function(config){
-	// merge config
-	config = _.defaultsDeep(config || {}, defaultConfig);
+module.exports = function(options){
+	// merge options
+	options = _.defaultsDeep(options || {}, defaultConfig);
 	
 	var zetan = this;
 	var mw = composable_middleware();
@@ -35,7 +37,7 @@ module.exports = function(config){
 	global.c = require('tracer').colorConsole();
 
 	// switch on/off debug mode
-	log.toggleDebug(config.debug);
+	log.toggleDebug(options.debug);
 	
 	// static files
 	mw.use(express.static('public'));
@@ -59,8 +61,8 @@ module.exports = function(config){
 		mw.use(require('connect-livereload')());	
 	}
 
-	mw.use(require('./api')(config.api));
-	mw.use(require('./apps')(config.apps));
+	mw.use(require('./api')(options.api));
+	mw.use(require('./apps')(options.apps));
 
 	return mw;
 }
@@ -79,3 +81,5 @@ module.exports.serve = function(port,options){
 		log.debug('## running on http://localhost:' + port);
 	});
 }
+
+log('if use nodemon: "nodemon index.js --dev --ignore client.js" recommended for dev');

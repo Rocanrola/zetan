@@ -30,6 +30,8 @@ app.listen(port,function () {
 });
 ```
 
+## APPs
+
 an app is a directory inside the "apps" directory
 
 ```sh
@@ -106,12 +108,62 @@ if template exists alone inside the app, zetan will return the static html as re
 
 ```
 
+### client.js
+a client.js can be included in the app directory
+
+```sh
+apps/index/client.js
+```
+
+and call it from the template like this:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script src="{{{appName}}}}/client.js"></script>
+	...
+```
+
+### client.less
+a styles.less can be included in the app directory
+
+```sh
+apps/index/styles.less
+```
+
+and called it from the template like this:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="{{{appName}}}}/styles.css">
+	...
+```
+
+this will be automatically parsde by less process before response
+
 ## C logger
 
 ```js
 // c global object added by zetan
 c.log('use this instead console.log');
 ```
+## Development mode
+
+--dev argument enables development mode, avoid minify and cache some things.
+
+```sh
+node index.js --dev
+```
+
+for nodemon
+
+```sh
+nodemon index.js --dev --ignore client.js
+```
+
 
 ## API
 

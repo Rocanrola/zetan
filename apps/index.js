@@ -30,6 +30,22 @@ module.exports = function(options){
 		});
 	});
 
+	router.get('/:appName/client.js',function(req,res,next){
+		apps.loadClient(req.params.appName,options).then(function(script){
+			res.end(script);
+		}).catch(function(err){
+			res.status(404).send(err);
+		});
+	});
+
+	router.get('/:appName/styles.css',function(req,res,next){
+		apps.loadStylesheet(req.params.appName,options).then(function(css){
+			res.end(css);
+		}).catch(function(err){
+			res.status(404).send(err);
+		});
+	});
+
 	mw.use(router);
 
 	mw.use(function(req,res,next){

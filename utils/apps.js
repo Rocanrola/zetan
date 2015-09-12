@@ -5,7 +5,59 @@ var fs = require('fs');
 var log = require('../utils/log');
 var zetan = require('../');
 var readFile = require('fs-readfile-promise');
+var browserify = require('browserify');
+var less = require('less');
 
+
+exports.loadClient = function(appName,options){
+	var deferred = q.defer();
+	var appPath = this.resolve(appName,options);
+	var scriptPath = path.resolve(appPath,options.clientSriptDefaultFileName);
+
+	log.debug('scriptPath',scriptPath);
+
+	if(fs.existsSync(scriptPath)){
+		var b = browserify();
+		b.add(scriptPath);
+
+		b.bundle(function(err,buffer){
+			deferred.resolve(buffer.toString());
+		})
+	}else{
+		log.debug(appName,'app client file not found')
+		deferred.reject();
+	}
+
+
+	return deferred.promise;
+}
+
+exports.loadStylesheet = function(appName,options){
+	var deferred = q.defer();
+	var appPath = this.resolve(appName,options);
+	var stylesheetPath = path.resolve(appPath,options.stylesheetDefaultFileName);
+
+	log.debug('stylesheetPath',stylesheetPath);
+
+	if(fs.existsSync(stylesheetPath)){
+		readFile(stylesheetPath).then(function(lessCode){
+			less.render(lessCode.toString())
+				.then(function(output){
+					deferred.resolve(output.css);
+				})
+				.catch(function(err){
+					log.debug(err);
+					deferred.reject(err);
+				});
+		})
+	}else{
+		log.debug(appName,'app stylesheet file not found')
+		deferred.reject();
+	}
+
+
+	return deferred.promise;
+}
 
 exports.loadTemplate = function(appName,options){
 	var appPath = this.resolve(appName,options);
@@ -64,6 +116,9 @@ exports.load = function(appName,options){
 		
 		middleware(options.req,options.res,function(middData){
 			render(middData,zetan).then(function(renderData){
+				// add extra data
+				renderData.appName = appName;
+
 				that.loadTemplate(appName,options).then(function(tpl){
 					var res = that.render(tpl,renderData,{},options);
 					deferred.resolve(res);
