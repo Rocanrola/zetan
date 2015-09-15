@@ -5,7 +5,6 @@ var express = require('express');
 
 var helpers = require('./helpers');
 var utils = require('./utils');
-var argv = require('minimist')(process.argv.slice(2));
 
 var log = utils.log;
 
@@ -52,14 +51,6 @@ module.exports = function(options){
 		req.helpers = helpers;
 		next();
 	})
-	
-	// add middlewares
-	if(argv.dev){
-		log.debug('--dev argument passed');
-
-		log.debug('connect live reload middleware');
-		mw.use(require('connect-livereload')());	
-	}
 
 	mw.use(require('./api')(options.api));
 	mw.use(require('./apps')(options.apps));
@@ -80,6 +71,7 @@ module.exports.serve = function(port,options){
 	app.listen(port,function(){
 		log.debug('## running on http://localhost:' + port);
 	});
+	return app;
 }
 
 log('if use nodemon: "nodemon index.js --dev --ignore client.js" recommended for dev');

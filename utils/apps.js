@@ -36,12 +36,15 @@ exports.loadStylesheet = function(appName,options){
 	var deferred = q.defer();
 	var appPath = this.resolve(appName,options);
 	var stylesheetPath = path.resolve(appPath,options.stylesheetDefaultFileName);
+	var lessOptions = {
+		filename:stylesheetPath
+	}
 
 	log.debug('stylesheetPath',stylesheetPath);
 
 	if(fs.existsSync(stylesheetPath)){
 		readFile(stylesheetPath).then(function(lessCode){
-			less.render(lessCode.toString())
+			less.render(lessCode.toString(),lessOptions)
 				.then(function(output){
 					deferred.resolve(output.css);
 				})
@@ -70,10 +73,12 @@ exports.loadTemplate = function(appName,options){
 	});
 }
 
-exports.render = function(template,data,partials,options){
+exports.render = function(template,data,partials,options,appName){
 	template = options.templatesPrefix + template.toString();
 	data = data || {};
 	partials = partials || {};
+	
+	var appPath = this.resolve(appName,options);
 	
 	data.partial = function(){
 		return function(val, render) {
@@ -82,7 +87,8 @@ exports.render = function(template,data,partials,options){
 		}
 	};
 
-	return mustache.render(template,data,partials);
+	var rendered = mustache.render(template,data,partials);
+	return rendered;
 }
 
 
@@ -115,12 +121,15 @@ exports.load = function(appName,options){
 		var render = (module.render || this.defaultRender);
 		
 		middleware(options.req,options.res,function(middData){
+			log.debug('middleware loaded');
 			render(middData,zetan).then(function(renderData){
+				log.debug('render method loaded');
 				// add extra data
 				renderData.appName = appName;
 
 				that.loadTemplate(appName,options).then(function(tpl){
-					var res = that.render(tpl,renderData,{},options);
+					log.debug('template loaded');
+					var res = that.render(tpl,renderData,{},options,appName);
 					deferred.resolve(res);
 				})
 			})

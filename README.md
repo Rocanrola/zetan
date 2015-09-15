@@ -22,7 +22,9 @@ var app = express();
 var zetan = require('zetan');
 var port = 5678;
 
-app.use(zetan());
+app.use(zetan({
+	debug:true
+}));
 
 app.listen(port,function () {
 	// c global object is a tracer logger
@@ -32,7 +34,7 @@ app.listen(port,function () {
 
 ## APPs
 
-an app is a directory inside the "apps" directory
+an app is a module in the "apps" directory. it handle server and client side javascript. templating and css (less).
 
 ```sh
 http://localhost:5678/
@@ -42,7 +44,7 @@ http://localhost:5678/friends
 # will load the app in the apps/friends directory
 ```
 
-- app.js
+- index.js
 - apps
 	- index
 		- index.js
@@ -87,10 +89,10 @@ exports.middleware = function(req,res,render){
 ### template.html
 
 template.html file is a Mustache template. 
-It receive data sent by the render method. 
-It used triple curly braces notation: {{{var}}}
+it receive data sent by the render method. 
+it used triple curly braces notation: {{{var}}}
 
-if template exists alone inside the app, zetan will return the static html as response.
+if template exists alone inside the app module, zetan will return the static html as response.
 
 #### partial loader
 
@@ -125,6 +127,8 @@ and call it from the template like this:
 	...
 ```
 
+it is browserified by zetan before response
+
 ### client.less
 a styles.less can be included in the app directory
 
@@ -152,7 +156,7 @@ c.log('use this instead console.log');
 ```
 ## Development mode
 
---dev argument enables development mode, avoid minify and cache some things.
+--dev argument enables development mode. This avoid minify and and cache some things. Also enable livereload for less, templates and client.js
 
 ```sh
 node index.js --dev
