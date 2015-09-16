@@ -64,7 +64,6 @@ module.exports.utils = utils;
 module.exports.serve = function(port,options){
 	port = port || 8080;
 	var app = express();
-	var port = 5678;
 
 	app.use(this(options));
 

@@ -44,6 +44,8 @@ http://localhost:5678/friends
 # will load the app in the apps/friends directory
 ```
 
+#### Example structure:
+
 - index.js
 - apps
 	- index
@@ -58,7 +60,7 @@ http://localhost:5678/friends
 apps have to export a "render" method, a "middleware" method or both.
 
 ```js
-// File: apps/index/index.js
+// file: apps/index/index.js
 
 var q = require('q');
 
@@ -67,11 +69,13 @@ var q = require('q');
 // if not it just repond the object as plain json
 
 exports.render = function(data,zetan){
-	// data.req and data.res is passed 
+	// data is sent by the middleware (custom or default zetan middleware)
+	// data.req and data.res are sent
 
 	var deferred = q.defer();
 	deferred.resolve({a:'hola'});
 	return deferred.promise;
+	// it has to respond a promise
 }
 
 // if middleware method exists it's used to set data to be passed to render method
