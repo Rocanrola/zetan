@@ -6,8 +6,11 @@ var log = require('../utils/log');
 var zetan = require('../');
 var readFile = require('fs-readfile-promise');
 var browserify = require('browserify');
-var less = require('less');
 
+var less = require('less');
+var postcss = require('postcss');
+var autoprefixer = require('autoprefixer');
+var cssnano = require('cssnano');
 
 exports.loadClient = function(appName,options){
 	var deferred = q.defer();
@@ -33,7 +36,15 @@ exports.loadClient = function(appName,options){
 }
 
 exports.loadStylesheet = function(appName,options){
+
+	var ps = [autoprefixer];
+	
+	if(options.minifyCSS){
+		ps.push(cssnano());
+	}
+
 	var deferred = q.defer();
+
 	var appPath = this.resolve(appName,options);
 	var stylesheetPath = path.resolve(appPath,options.stylesheetDefaultFileName);
 	var lessOptions = {
@@ -46,7 +57,10 @@ exports.loadStylesheet = function(appName,options){
 		readFile(stylesheetPath).then(function(lessCode){
 			less.render(lessCode.toString(),lessOptions)
 				.then(function(output){
-					deferred.resolve(output.css);
+					return postcss(ps).process(output.css)
+				})
+				.then(function(procesed){
+					deferred.resolve(procesed.css);
 				})
 				.catch(function(err){
 					log.debug(err);

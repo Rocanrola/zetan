@@ -4,7 +4,6 @@ var express = require('express');
 var log = require('../utils/log');
 var apps = require('../utils/apps');
 var _ = require( 'lodash' );
-var argv = require('minimist')(process.argv.slice(2));
 
 var gulp = require('gulp');
 var livereload = require('gulp-livereload');
@@ -28,13 +27,10 @@ var liveReloadServer = function(options){
 
 module.exports = function(options){
 	var mw = composable_middleware();
-
 	var router = express.Router();
 
 	// add middlewares
-	if(argv.dev){
-		log.debug('--dev argument passed');
-
+	if(options.env == 'development'){
 		log.debug('connect live reload middleware');
 		mw.use(require('connect-livereload')());
 		liveReloadServer(options);
