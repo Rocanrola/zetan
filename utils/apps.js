@@ -97,7 +97,11 @@ exports.render = function(template,data,partials,options,appName){
 	data.partial = function(){
 		return function(val, render) {
 			var partialPath = path.resolve(appPath,render(val));
-		    return fs.readFileSync(partialPath).toString();
+			if(fs.existsSync(partialPath)){
+		    	return fs.readFileSync(partialPath).toString();
+			}else{
+				return '';
+			}
 		}
 	};
 
