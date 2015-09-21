@@ -88,6 +88,9 @@ exports.loadTemplate = function(appName,options){
 }
 
 exports.render = function(template,data,partials,options,appName){
+	var that = this;
+	var args = Array.prototype.slice.call(arguments);
+
 	template = options.templatesPrefix + template.toString();
 	data = data || {};
 	partials = partials || {};
@@ -98,8 +101,12 @@ exports.render = function(template,data,partials,options,appName){
 		return function(val, render) {
 			var partialPath = path.resolve(appPath,render(val));
 			if(fs.existsSync(partialPath)){
-		    	return fs.readFileSync(partialPath).toString();
+				var file = fs.readFileSync(partialPath).toString();
+				// override original template with partial
+				args[0] = file;
+		    	return that.render.apply(that, args);
 			}else{
+				log.debug('partial not found',partialPath);
 				return '';
 			}
 		}
