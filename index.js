@@ -45,7 +45,7 @@ module.exports = function(options){
 	if(argv.dev){
 		// merge with dev config if --dev arg passed
 		options = _.merge(options, devConfig);
-		log('--dev passed. new app options \n',options);
+		log('--dev passed. options setted: \n',options);
 	}
 
 	// switch on/off debug mode

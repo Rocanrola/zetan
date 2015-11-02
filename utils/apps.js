@@ -24,7 +24,12 @@ exports.loadClient = function(appName,options){
 		b.add(scriptPath);
 
 		b.bundle(function(err,buffer){
-			deferred.resolve(buffer.toString());
+			if(err){
+				log.debug(err);
+				deferred.reject();
+			}else{
+				deferred.resolve(buffer.toString());
+			}
 		})
 	}else{
 		log.debug(appName,'app client file not found')
@@ -145,19 +150,24 @@ exports.load = function(appName,options){
 		var middleware = (module.middleware || this.defaultMiddleware);
 		var render = (module.render || this.defaultRender);
 		
-		middleware(options.req,options.res,function(middData){
+		middleware(options.req, options.res, function(middData){
 			log.debug('middleware loaded');
 			render(middData,zetan).then(function(renderData){
 				log.debug('render method loaded');
 				// add extra data
+				renderData = renderData || {};
 				renderData.appName = appName;
 
 				that.loadTemplate(appName,options).then(function(tpl){
 					log.debug('template loaded');
 					var res = that.render(tpl,renderData,{},options,appName);
 					deferred.resolve(res);
-				})
-			})
+				}).catch(function(e){
+					log.debug('error loading template', e);			
+				});
+			}).catch(function(e){
+				log.debug('error on render method', e);			
+			});
 		});
 
 	}catch(e){
