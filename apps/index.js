@@ -76,9 +76,9 @@ module.exports = function(options){
 	mw.use(router);
 
 	mw.use(function(req,res,next){
-		log.debug('apps middleware')
+		log.debug('apps middleware');
 		next();
-	})
+	});
 
 	return mw;
 }

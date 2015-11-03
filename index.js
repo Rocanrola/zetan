@@ -11,6 +11,7 @@ var log = utils.log;
 var argv = require('minimist')(process.argv.slice(2));
 
 var defaultConfig = {
+	dev:false,
 	debug:false,
 	api:{
 		baseDir:'api',
@@ -27,15 +28,16 @@ var defaultConfig = {
 		minifyCSS:true,
 		templatesPrefix:'{{={{{ }}}=}}'
 	}
-}
+};
 
 var devConfig = {
+	dev:true,
 	debug:true,
 	apps:{
 		env:'development',
 		minifyCSS:false
 	}
-}
+};
 
 module.exports = function(options){
 	// init options
@@ -52,6 +54,7 @@ module.exports = function(options){
 	log.toggleDebug(options.debug);
 
 	var zetan = this;
+
 	var mw = composable_middleware();
 	
 	// global c object

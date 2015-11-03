@@ -123,7 +123,10 @@ exports.render = function(template,data,partials,options,appName){
 
 
 exports.defaultMiddleware = function(req,res,render){
-	var data = {}
+	var data = {
+		config:req.config
+	}
+	
 	render(data);
 }
 
@@ -139,6 +142,8 @@ exports.load = function(appName,options){
 	var appPath = this.resolve(appName,options);
 	var that = this;
 	
+	options.req.config = options;
+
 	log.debug('attempting to load app');
 	log.debug('attempting to load app',appName);
 	log.debug('resolved app location:',appPath);
